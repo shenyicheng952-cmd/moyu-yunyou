@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#050412">
+  <title>摸鱼云游客｜现在逃离工位</title>
+  <meta name="description" content="用 3、10 或 30 分钟，随机降落一座城市。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="摸鱼云游客首页">
+      <span class="brand-mark">游</span>
+      <span><b>摸鱼云游客</b><small>MOYU CITY ESCAPE</small></span>
+    </a>
+    <div class="status"><i></i> 摸鱼信号稳定</div>
+    <button class="saved-btn" id="savedBtn" type="button">收藏 <span id="savedCount">0</span></button>
+  </header>
+
+  <main>
+    <section class="hero-copy">
+      <p class="eyebrow">// 工位之外，还有 9,600,000 平方公里</p>
+      <h1>暂停工作。<br><em>随机降落</em>一座城市。</h1>
+      <p class="intro">选一段摸鱼时长，我们替你规划一次刚刚好的逃离。无需请假，也不用收拾行李。</p>
+      <div class="duration" role="group" aria-label="选择摸鱼时长">
+        <button class="duration-btn active" data-minutes="3"><b>03</b><span>分钟<br>闪现</span></button>
+        <button class="duration-btn" data-minutes="10"><b>10</b><span>分钟<br>散步</span></button>
+        <button class="duration-btn" data-minutes="30"><b>30</b><span>分钟<br>深游</span></button>
+      </div>
+      <button class="jump-btn" id="jumpBtn" type="button"><span>随机降落</span><i>↗</i></button>
+      <p class="shortcut">按 <kbd>SPACE</kbd> 也可以立即出发</p>
+    </section>
+
+    <section class="map-shell" aria-label="城市探索地图">
+      <div class="map-head">
+        <span>CHINA / LIVE MAP</span>
+        <span id="localTime">UTC+8 15:42</span>
+      </div>
+      <div class="map-grid"></div>
+      <svg class="route-map" viewBox="0 0 700 600" role="img" aria-label="可互动的城市路线图">
+        <defs>
+          <filter id="glow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <linearGradient id="route" x1="0" x2="1"><stop stop-color="#00f0ff"/><stop offset="1" stop-color="#ff3bd4"/></linearGradient>
+        </defs>
+        <path class="land" d="M116 115L197 76l92 37 69-48 86 46 78 5 24 77 67 72-26 91 42 72-62 69-83 10-63 58-99-16-69 31-61-55-75-18-28-83 36-75-23-83 52-69z"/>
+        <path class="route" d="M166 184 Q280 210 345 340 T524 411 M236 450 Q320 400 422 249 M345 340 Q430 350 527 190"/>
+        <g id="cityNodes"></g>
+      </svg>
+      <div class="map-legend"><span><i class="cyan"></i>城市</span><span><i class="pink"></i>美食热点</span></div>
+      <aside class="radar-card">
+        <span>今日云游客</span><b>12,840</b><small>正在逃离工位</small>
+        <div class="radar"><i></i></div>
+      </aside>
+    </section>
+  </main>
+
+  <section class="ticker" aria-label="城市动态">
+    <div>成都 · 雨后火锅正沸腾 <span>✦</span> 上海 · 梧桐区适合散步 <span>✦</span> 西安 · 城墙晚风已上线 <span>✦</span> 广州 · 宵夜档即将开火 <span>✦</span></div>
+  </section>
+
+  <dialog id="exploreDialog" class="explore-dialog">
+    <header class="explore-head">
+      <div>
+        <p class="eyebrow" id="exploreCode">// SHA · PIXEL CITY</p>
+        <h2><span id="exploreCity">上海</span>漫游地图</h2>
+      </div>
+      <div class="stamp-progress"><span>城市打卡</span><b><i id="checkedCount">0</i>/<i id="totalCount">16</i></b></div>
+      <button class="close-btn" id="closeExplore" aria-label="关闭">×</button>
+    </header>
+    <div class="explore-body">
+      <aside class="city-guide">
+        <div class="city-style-label">CITY STYLE</div>
+        <h3 id="styleTitle">海派复古 × 未来霓虹</h3>
+        <p id="styleDesc">梧桐街区、江岸天际线、弄堂烟火气，一次收集三种上海。</p>
+        <div class="style-chips" id="styleChips"></div>
+        <div class="filter-title">想去哪里？</div>
+        <div class="spot-filters" id="spotFilters">
+          <button class="active" data-filter="all">全部</button>
+          <button data-filter="景点">景点</button>
+          <button data-filter="美食">美食</button>
+          <button data-filter="街区">街区</button>
+        </div>
+        <div class="quest-card">
+          <span>今日摸鱼任务</span>
+          <b id="questText">完成 3 次上海打卡</b>
+          <div><i id="questBar"></i></div>
+        </div>
+        <p class="guide-tip">点击地图光点，Q版游客会自己走过去。</p>
+      </aside>
+
+      <section class="pixel-world" id="pixelWorld" aria-label="互动像素城市地图">
+        <div class="pixel-sky"></div>
+        <div class="pixel-city" id="pixelCity"></div>
+        <div class="world-grid"></div>
+        <div class="spot-nodes" id="spotNodes"></div>
+        <div class="pixel-tourist" id="pixelTourist" aria-label="Q版云游客">
+          <div class="tourist-shadow"></div>
+          <div class="tourist-bubble" id="touristBubble">去哪儿摸鱼？</div>
+          <div class="tourist-head"><i class="hair"></i><i class="eye l"></i><i class="eye r"></i><i class="mouth"></i></div>
+          <div class="tourist-body"><i class="arm l"></i><i class="arm r"></i><i class="camera"></i></div>
+          <div class="tourist-legs"><i></i><i></i></div>
+        </div>
+        <div class="world-hint">CLICK A GLOWING SPOT · 点击发光地点</div>
+      </section>
+
+      <aside class="spot-detail" id="spotDetail">
+        <div class="pixel-postcard" id="pixelPostcard" tabindex="0" role="button" aria-label="放大像素明信片"></div>
+        <div class="detail-meta"><span id="detailCategory">推荐</span><i id="detailDistrict">黄浦区</i></div>
+        <h3 id="detailName">先选一个地点</h3>
+        <p id="detailDesc">地图上每一个发光点都可以探索。你的Q版游客会走过去，并完成专属动作。</p>
+        <div class="detail-reason" id="detailReason">选中地点后，这里会显示城市攻略和打卡建议。</div>
+        <button class="checkin-btn" id="checkinBtn" type="button" disabled>到这里打卡 <span>＋1</span></button>
+      </aside>
+    </div>
+    <footer class="explore-footer">
+      <span>已获得印章</span>
+      <div class="stamp-row" id="stampRow"></div>
+      <button id="randomSpotBtn" type="button">随机逛一个 ↗</button>
+    </footer>
+  </dialog>
+
+  <dialog id="cityDialog" class="city-dialog">
+    <button class="close-btn" id="closeDialog" aria-label="关闭">×</button>
+    <div class="dialog-visual" id="dialogVisual"><span id="cityCode">CDU</span><b id="cityNameBig">成都</b></div>
+    <div class="dialog-content">
+      <div class="dialog-kicker"><span id="cityTag">巴适慢生活</span><i id="tripTime">03 MIN ESCAPE</i></div>
+      <h2 id="cityTitle">降落成都</h2>
+      <p id="cityDesc"></p>
+      <div class="route-title"><span>本次摸鱼路线</span><small id="routeMeta"></small></div>
+      <div class="stops" id="stops"></div>
+      <button class="save-city" id="saveCity" type="button">＋ 收藏这次逃离</button>
+    </div>
+  </dialog>
+
+  <dialog id="savedDialog" class="saved-dialog">
+    <button class="close-btn" id="closeSaved" aria-label="关闭">×</button>
+    <p class="eyebrow">// YOUR ESCAPE LIST</p>
+    <h2>想去的地方</h2>
+    <div id="savedList" class="saved-list"></div>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
